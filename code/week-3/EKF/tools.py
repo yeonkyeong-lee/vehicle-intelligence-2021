@@ -21,3 +21,17 @@ def Jacobian(x):
          py / c2]
     ])
     return Hj
+
+# code from https://www.programcreek.com/python/?CodeExample=normalize+angle
+def normalizeAngle(angle):
+    """
+    :param angle: (float)
+    :return: (float) Angle in radian in [-pi, pi]
+    """
+    while angle > np.pi:
+        angle -= 2.0 * np.pi
+
+    while angle < -np.pi:
+        angle += 2.0 * np.pi
+
+    return angle 

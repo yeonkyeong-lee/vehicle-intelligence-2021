@@ -1,7 +1,7 @@
 import numpy as np
 from math import sqrt
 from math import atan2
-from tools import Jacobian
+from tools import Jacobian, normalizeAngle
 
 class KalmanFilter:
     def __init__(self, x_in, P_in, F_in, H_in, R_in, Q_in):
@@ -33,3 +33,22 @@ class KalmanFilter:
         # 6. Calculate new estimates
         #    x = x' + K * y
         #    P = (I - K * H_j) * P
+        print ("self.x", self.x)
+
+        # 1.
+        H_j = Jacobian(self.x)
+        S = np.dot(np.dot(H_j, self.P), H_j.T) + self.R
+        K = np.dot(np.dot(self.P, H_j.T), np.linalg.inv(S))
+        
+        # 4. 
+        px, py, vx, vy = self.x
+        rho = np.sqrt(px**2 + py**2)
+        phi = np.arctan2(py, px)
+        rho_dot = (px*vx + py*vy) / rho
+
+        y = z - np.array([rho, phi, rho_dot])
+        y[1] = normalizeAngle(y[1])
+
+        self.x = self.x + np.dot(K, y)
+        self.P = np.dot((np.identity(4) - np.dot(K, H_j)), self.P)
+        
