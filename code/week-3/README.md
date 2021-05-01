@@ -52,3 +52,33 @@ The program consists of five modules:
 ### Assignment
 
 Complete the implementation of EKF with sensor fusion by writing the function `update_ekf()` in the module `kalman_filter`. Details are given in class and instructions are included in comments.
+
+# Report
+
+- Jacobian 행렬, S, kalman gain 계산
+```
+H_j = Jacobian(self.x)
+S = np.dot(np.dot(H_j, self.P), H_j.T) + self.R
+K = np.dot(np.dot(self.P, H_j.T), np.linalg.inv(S))
+```
+
+- h(x')는 rho, phi, rho_dot으로 표현됨
+```
+px, py, vx, vy = self.x
+rho = np.sqrt(px**2 + py**2)
+phi = np.arctan2(py, px)
+rho_dot = (px*vx + py*vy) / rho
+y = z - np.array([rho, phi, rho_dot])
+```
+
+- angle normalize 함수는 tools.py에 구현
+```
+y[1] = normalizeAngle(y[1])
+```
+
+- 새로운 estimate 업데이트
+```
+self.x = self.x + np.dot(K, y)
+self.P = np.dot((np.identity(4) - np.dot(K, H_j)), self.P)
+```
+
