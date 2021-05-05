@@ -35,6 +35,28 @@ class GNB():
         '''
         # TODO: implement code.
 
+        data_seperation = {}
+        self.data_stat = {}
+
+        for i, clss in enumerate(Y) : 
+            if clss not in data_seperation : 
+                data_seperation[clss] = []
+                self.data_stat[clss] = {}
+
+            data_seperation[clss].append(X[i])
+        
+        for clss in data_seperation : 
+            data = np.array(data_seperation[clss])
+
+            means = np.mean(data, axis=0)
+            stds = np.std(data, axis=0)
+
+            self.data_stat[clss]['means'] = means
+            self.data_stat[clss]['stds'] = stds
+            self.data_stat[clss]['len'] = data.shape[0]
+        
+        
+
     # Given an observation (s, s_dot, d, d_dot), predict which behaviour
     # the vehicle is going to take using GNB.
     def predict(self, observation):
@@ -46,5 +68,18 @@ class GNB():
         Return the label for the highest conditional probability.
         '''
         # TODO: implement code.
-        return "keep"
+        probs = []
+        total_len = sum(self.data_stat[clss]['len'] for clss in self.data_stat)
+
+        for clss in self.data_stat : 
+            prob = self.data_stat[clss]['len'] / total_len
+
+            for i in range(len(observation)) : 
+                mean = self.data_stat[clss]['means'][i]
+                std = self.data_stat[clss]['stds'][i]
+                prob *= gaussian_prob(observation[i], mean, std)
+
+            probs.append(prob)
+
+        return list(self.data_stat.keys())[np.argmax(probs)]
 
