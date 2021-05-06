@@ -66,10 +66,7 @@ class Vehicle(object):
             if cost < min_cost : 
                 min_cost = cost
                 best_trajectory = trajectory
-
-                print('minimum cost', state, cost)
-                print(trajectory[0].state)
-                print(trajectory[1].state)
+        print('min_cost', min_cost)
 
         return best_trajectory 
 

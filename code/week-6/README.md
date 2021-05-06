@@ -1,5 +1,67 @@
 # Week 6 - Prediction & Behaviour Planning
 
+## Report #1
+
+## Report #2
+
+### Task 1
+
+```python
+def choose_next_state(self, predictions):
+	possible_successor_states = self.successor_states()
+
+	min_cost = 1000000
+	best_trajectory = None
+
+	for state in possible_successor_states :
+
+		trajectory = self.generate_trajectory(state, predictions)
+		cost = calculate_cost(self, trajectory, predictions)
+
+		if cost < min_cost : 
+			min_cost = cost
+			best_trajectory = trajectory
+
+	return best_trajectory 
+```
+
+1. 가능한 모든 state들에 대해 trajectory를 계산한다.
+2. 계산한 trajectory에 대한 cost를 계산한다.
+3. 가장 작은 cost를 가지는 trajectory를 리턴한다.
+
+### Task 2
+```python
+def goal_distance_cost(vehicle, trajectory, predictions, data):
+    '''
+    Cost increases based on distance of intended lane (for planning a
+    lane change) and final lane of a trajectory.
+    Cost of being out of goal lane also becomes larger as vehicle approaches
+    the goal distance.
+    '''
+
+    distance_weight = abs(vehicle.goal_s - data.end_distance_to_goal)
+    lane_diff = abs(vehicle.goal_lane - data.intended_lane)
+    lane_diff += abs(vehicle.goal_lane - data.final_lane)
+
+    return lane_diff * distance_weight
+
+def inefficiency_cost(vehicle, trajectory, predictions, data):
+    '''
+    Cost becomes higher for trajectories with intended lane and final lane
+    that have slower traffic.
+    '''
+    intended = velocity(predictions, data.intended_lane) or vehicle.target_speed
+    final = velocity(predictions, data.final_lane) or vehicle.target_speed
+
+    return -(intended + final)
+```
+- `goal_distance_cost` : goal_lane과 intended lane, final lane과의 차이에 distance weight를 곱해 구현하였다. 목표 lane에 들어와 있으면 cost는 0이 되고, 목표 lane에 들어와 있지 않을 때는 목표 지점과의 거리에 비례해 cost가 올라간다. 
+	- `REACH_GOAL = 1, EFFICIENCY = 0`으로 weight를 설정하면 그림과 같이 목표 레인으로 ego가 바로 움직이는 것을 확인할 수 있다. 목표 지점까지 도달하는 데 걸리는 속도는 52초이다. 
+	- ![img](./BP/images/01.png)
+- `inefficiency_cost` : intended traffic과 final traffic 의 합에 -를 취해서 간단하게 구현하였다. 
+	- `REACH_GOAL = 0, EFFICIENCY = 1`으로 weight를 설정하면 속도가 가장 빠른 레인에만 ego가 머물어 목표 레인에 제대로 도달하지 않는 것을 확인할 수 있다. 목표 지점까지 도달하는 데 걸리는 속도는 34초이다.
+	- ![img](./BP/images/02.png)
+- `REACH_GOAL = 0.005, EFFICIENCY = 0.995`으로 weight를 설정하면 34초만에 목표 지점에 도달하는 것을 확인할 수 있었다.  `goal_distance_cost`의 수치가 `inefficiency_cost`의 수치보다 일반적으로 크기 때문에 이러한 파라미터를 적용했다. 각 cost에 정규화를 적용한다면 조금 더 쉽게 weight를 조절할 수 있을 것이다. 
 ---
 
 ## Assignment #1
@@ -72,3 +134,4 @@ You are also invited to experiment with a number of different simulation setting
 and so on.
 
 Remember that our state machine should be geared towards reaching the goal in an *efficient* manner. Try to compare a behaviour that switches to the goal lane as soon as possible (note that the goal position is in the slowest lane in the given setting) and one that follows a faster lane and move to the goal lane as the remaining distance decreases. Observe different behaviour taken by the ego vehicle when different weights are given to different cost functions, and also when other cost metrics (additional cost functions) are used.
+

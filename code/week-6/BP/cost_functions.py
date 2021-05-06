@@ -20,8 +20,8 @@ computed by get_helper_data function.
 '''
 
 # weights for costs
-REACH_GOAL = 0
-EFFICIENCY = 1
+REACH_GOAL = 0.005
+EFFICIENCY = 0.995
 
 DEBUG = True
 
@@ -34,7 +34,8 @@ def goal_distance_cost(vehicle, trajectory, predictions, data):
     '''
 
     distance_weight = abs(vehicle.goal_s - data.end_distance_to_goal)
-    lane_diff = abs(vehicle.goal_lane - data.intended_lane - data.final_lane)
+    lane_diff = abs(vehicle.goal_lane - data.intended_lane)
+    lane_diff += abs(vehicle.goal_lane - data.final_lane)
 
     return lane_diff * distance_weight
 
