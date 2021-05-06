@@ -2,6 +2,64 @@
 
 ## Report #1
 
+### train
+```python
+def train(self, X, Y):
+	'''
+	Collect the data and calculate mean and standard variation
+	for each class. Record them for later use in prediction.
+	'''
+
+	data_seperation = {}
+	self.data_stat = {}
+
+	for i, clss in enumerate(Y) : 
+		if clss not in data_seperation : 
+			data_seperation[clss] = []
+			self.data_stat[clss] = {}
+
+		data_seperation[clss].append(X[i])
+	
+	for clss in data_seperation : 
+		data = np.array(data_seperation[clss])
+
+		means = np.mean(data, axis=0)
+		stds = np.std(data, axis=0)
+
+		self.data_stat[clss]['means'] = means
+		self.data_stat[clss]['stds'] = stds
+		self.data_stat[clss]['len'] = data.shape[0]
+```
+- 각 클래스에 맞게 데이터를 나눈 후 각 클래스의 각 변수에 대해 mean, std, 데이터 갯수를 dictionary형태로 저장했다.
+
+### prediction
+```python
+def predict(self, observation):
+	'''
+	Calculate Gaussian probability for each variable based on the
+	mean and standard deviation calculated in the training process.
+	Multiply all the probabilities for variables, and then
+	normalize them to get conditional probabilities.
+	Return the label for the highest conditional probability.
+	'''
+	probs = []
+	total_len = sum(self.data_stat[clss]['len'] for clss in self.data_stat)
+
+	for clss in self.data_stat : 
+		prob = self.data_stat[clss]['len'] / total_len
+
+		for i in range(len(observation)) : 
+			mean = self.data_stat[clss]['means'][i]
+			std = self.data_stat[clss]['stds'][i]
+			prob *= gaussian_prob(observation[i], mean, std)
+
+		probs.append(prob)
+
+	return list(self.data_stat.keys())[np.argmax(probs)]
+```
+- `train`에서 구한 statistics를 이용하여 각 클래스에 대한 확률을 구한 후 가장 큰 확률을 가지는 클래스를 리턴한다.
+- 구현한 코드로 `prediction.py`를 실행한 결과 84.40%의 정확도를 얻을 수 있었다.
+
 ## Report #2
 
 ### Task 1
