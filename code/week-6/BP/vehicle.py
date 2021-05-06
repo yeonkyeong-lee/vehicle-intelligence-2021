@@ -53,6 +53,35 @@ class Vehicle(object):
             a trajectory.
         '''
 
+        # 현재 상태에서 어떤 transition이 가능할지 결정 -> successor_state()함수가 유용할 것이다..
+        # 각 상태에 대해 trajectory를 사용해 cost를 결정하고 
+        # minimum cost trajectory를 골라서 리턴
+        # planned trajectory 를 리턴해야 한다는 사실 명심.. 
+
+
+        # print(predictions[1][0].successor_states())
+        
+        possible_successor_states = self.successor_states()
+
+        min_cost = 1000000
+        best_trajectory = None
+
+        for state in possible_successor_states :
+
+            trajectory = self.generate_trajectory(state, predictions)
+            cost = calculate_cost(self, trajectory, predictions)
+
+            if cost < min_cost : 
+                min_cost = cost
+                best_trajectory = trajectory
+
+                print('minimum cost', state, cost)
+                print(trajectory[0].state)
+                print(trajectory[1].state)
+
+        return best_trajectory 
+
+
         # TODO: implement state transition function based on the cost
         #       associated with each transition.
 

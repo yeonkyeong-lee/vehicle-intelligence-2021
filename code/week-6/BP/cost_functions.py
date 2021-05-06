@@ -21,9 +21,9 @@ computed by get_helper_data function.
 
 # weights for costs
 REACH_GOAL = 0
-EFFICIENCY = 0
+EFFICIENCY = 1
 
-DEBUG = False
+DEBUG = True
 
 def goal_distance_cost(vehicle, trajectory, predictions, data):
     '''
@@ -32,14 +32,21 @@ def goal_distance_cost(vehicle, trajectory, predictions, data):
     Cost of being out of goal lane also becomes larger as vehicle approaches
     the goal distance.
     '''
-    return 0
+
+    distance_weight = abs(vehicle.goal_s - data.end_distance_to_goal)
+    lane_diff = abs(vehicle.goal_lane - data.intended_lane - data.final_lane)
+
+    return lane_diff * distance_weight
 
 def inefficiency_cost(vehicle, trajectory, predictions, data):
     '''
     Cost becomes higher for trajectories with intended lane and final lane
     that have slower traffic.
     '''
-    return 0
+    intended = velocity(predictions, data.intended_lane) or vehicle.target_speed
+    final = velocity(predictions, data.final_lane) or vehicle.target_speed
+
+    return -(intended + final)
 
 def calculate_cost(vehicle, trajectory, predictions):
     '''
