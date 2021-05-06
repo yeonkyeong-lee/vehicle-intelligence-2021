@@ -52,14 +52,6 @@ class Vehicle(object):
             Imported from cost_functions.py, computes the cost for
             a trajectory.
         '''
-
-        # 현재 상태에서 어떤 transition이 가능할지 결정 -> successor_state()함수가 유용할 것이다..
-        # 각 상태에 대해 trajectory를 사용해 cost를 결정하고 
-        # minimum cost trajectory를 골라서 리턴
-        # planned trajectory 를 리턴해야 한다는 사실 명심.. 
-
-
-        # print(predictions[1][0].successor_states())
         
         possible_successor_states = self.successor_states()
 
@@ -81,16 +73,6 @@ class Vehicle(object):
 
         return best_trajectory 
 
-
-        # TODO: implement state transition function based on the cost
-        #       associated with each transition.
-
-        # Note that the return value is a trajectory, where a trajectory
-        # is a list of Vehicle objects with two elements.
-        return [
-            Vehicle(self.lane, self.s, self.v, self.a, self.state),
-            Vehicle(self.lane, self.position_at(1), self.v, 0, self.state)
-        ]
 
     def successor_states(self):
         '''
