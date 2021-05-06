@@ -1,5 +1,66 @@
 # Week 5 - Path Planning & the A* Algorithm
 
+## Report
+
+### value function 과 policy function 계산하기
+```python
+def optimum_policy_2D(grid, init, goal, cost):
+    # ... 
+        for y, x, t in p:
+            # Mark the final state with a special value that we will
+            # use in generating the final path policy.
+            if (y, x) == goal and value[(t, y, x)] > 0:
+                # TODO: implement code.
+                value[(t, y, x)] = 0
+                policy2D[(y, x)] = '*'
+                change = True
+            # Try to use simple arithmetic to capture state transitions.
+            elif grid[(y, x)] == 0:
+                # TODO: implement code.
+                for c, a in zip(list(cost), action) : 
+
+                    t2 = (t + a) % 4 
+                    y2, x2 = y + forward[t2][0], x + forward[t2][1]
+
+                    if 0 <= y2 < grid.shape[0] \
+                        and 0 <= x2 < grid.shape[1] \
+                        and grid[(y2, x2)] == 0 : 
+
+                        v2 = value[(t2, y2, x2)] + c
+
+                        if v2 < value[(t, y, x)] : 
+                            change = True
+                            value[(t, y, x)] = v2
+                            policy[(t, y, x)] = a
+```
+- 각 action과 그에 따른 cost를 이용해 value, policy 업데이트
+
+### policy 를 이용하여 최적의 경로 찾기
+
+```python
+def optimum_policy_2D(grid, init, goal, cost) : 
+    # Now navigate through the policy table to generate a
+    # sequence of actions to take to follow the optimal path.
+    # TODO: implement code.
+    
+    t, y, x = init[2], init[0], init[1]
+
+    while (y, x) != goal : 
+        a = policy[(t, y, x)]
+        t2 = (t + a)  % 4
+        y2, x2 = y + forward[t2][0], x + forward[t2][1]
+
+        if 0 <= y2 < grid.shape[0] and 0 <= x2 < grid.shape[1] \
+            and grid[(y2, x2)] == 0 :
+
+            policy2D[(y, x)] = action_name[a+1]
+            t, y, x = t2, y2, x2
+
+    # Return the optimum policy generated above.
+    return policy2D
+```
+- init position에서 출발하여 policy를 따라 경로 생성
+
 ---
 
 ## Examples
