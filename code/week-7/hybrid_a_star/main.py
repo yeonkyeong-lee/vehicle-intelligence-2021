@@ -26,7 +26,7 @@ grid = np.array([
 
 # The coordinates are represented by (x, y, theta).
 # Note that this order does not agree with numpy array indices.
-start = (0.0, 0.0, 0.0)
+start = (0.0, 0.5, 0.1)
 # Note that the goal is specified by (x, y)
 goal = (grid.shape[0] - 1, grid.shape[1] - 1)
 
